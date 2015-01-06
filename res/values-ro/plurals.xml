@@ -25,8 +25,8 @@
     <item quantity="other"><xliff:g id="count">%d</xliff:g> de actualizări</item>
   </plurals>
   <plurals name="extension_expandedTitle">
-    <item quantity="one"><xliff:g id="count">%d</xliff:g> actualizare CyanogenMod</item>
+    <item quantity="one"><xliff:g id="count">%d</xliff:g> actualizare OpenDesireProject</item>
     <item quantity="few"><xliff:g id="count">%d</xliff:g> actualizări CyanogenMod</item>
-    <item quantity="other"><xliff:g id="count">%d</xliff:g> de actualizări CyanogenMod</item>
+    <item quantity="other"><xliff:g id="count">%d</xliff:g> de actualizări OpenDesireProject</item>
   </plurals>
 </resources>
