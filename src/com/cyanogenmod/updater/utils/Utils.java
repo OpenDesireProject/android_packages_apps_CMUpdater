@@ -27,11 +27,8 @@ import android.os.storage.StorageManager;
 import android.os.storage.StorageVolume;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
 import android.util.Log;
 
-import android.view.DisplayInfo;
-import android.view.WindowManager;
 import com.cyanogenmod.updater.R;
 import com.cyanogenmod.updater.misc.Constants;
 import com.cyanogenmod.updater.service.UpdateCheckService;
@@ -41,14 +38,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public class Utils {
-    // Device type reference
-    private static int sDeviceType = -1;
-
-    // Device types
-    private static final int DEVICE_PHONE = 0;
-    private static final int DEVICE_HYBRID = 1;
-    private static final int DEVICE_TABLET = 2;
-
     private Utils() {
         // this class is not supposed to be instantiated
     }
@@ -165,34 +154,22 @@ public class Utils {
         StorageManager sm = (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);
         StorageVolume[] volumes = sm.getVolumeList();
         String primaryStoragePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-        boolean alternateIsInternal = context.getResources().getBoolean(R.bool.alternateIsInternal);
-
-        if (volumes.length <= 1) {
-            // single storage, assume only /sdcard exists
-            return "/sdcard";
-        }
 
         for (int i = 0; i < volumes.length; i++) {
             StorageVolume v = volumes[i];
             if (v.getPath().equals(primaryStoragePath)) {
                 /* This is the primary storage, where we stored the update file
                  *
-                 * For CM10, a non-removable storage (partition or FUSE)
-                 * will always be primary. But we have older recoveries out there
-                 * in which /sdcard is the microSD, and the internal partition is
-                 * mounted at /emmc.
-                 *
-                 * At buildtime, we try to automagically guess from recovery.fstab
-                 * what's the recovery configuration for this device. If "/emmc"
-                 * exists, and the primary isn't removable, we assume it will be
-                 * mounted there.
+                 * For CM12, a non-removable storage (partition or FUSE)
+                 * will always be primary. But we have devices out there in which
+                 * /sdcard is the microSD, and/or an emmc partition
                  */
-                if (!v.isRemovable() && alternateIsInternal) {
-                    return "/emmc";
+                if (!v.isRemovable() && Environment.isExternalStorageEmulated()) {
+                    return "/data/media";
                 }
             };
         }
-        // Not found, assume non-alternate
+        // Not found, assume non-datamedia device
         return "/sdcard";
     }
 
@@ -213,39 +190,5 @@ public class Utils {
         }
 
         return updateType;
-    }
-
-    private static int getScreenType(Context context) {
-        if (sDeviceType == -1) {
-            WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-            DisplayInfo outDisplayInfo = new DisplayInfo();
-            wm.getDefaultDisplay().getDisplayInfo(outDisplayInfo);
-            int shortSize = Math.min(outDisplayInfo.logicalHeight, outDisplayInfo.logicalWidth);
-            int shortSizeDp = shortSize * DisplayMetrics.DENSITY_DEFAULT
-                    / outDisplayInfo.logicalDensityDpi;
-            if (shortSizeDp < 600) {
-                // 0-599dp: "phone" UI with a separate status & navigation bar
-                sDeviceType =  DEVICE_PHONE;
-            } else if (shortSizeDp < 720) {
-                // 600-719dp: "phone" UI with modifications for larger screens
-                sDeviceType = DEVICE_HYBRID;
-            } else {
-                // 720dp: "tablet" UI with a single combined status & navigation bar
-                sDeviceType = DEVICE_TABLET;
-            }
-        }
-        return sDeviceType;
-    }
-
-    public static boolean isPhone(Context context) {
-        return getScreenType(context) == DEVICE_PHONE;
-    }
-
-    public static boolean isHybrid(Context context) {
-        return getScreenType(context) == DEVICE_HYBRID;
-    }
-
-    public static boolean isTablet(Context context) {
-        return getScreenType(context) == DEVICE_TABLET;
     }
 }
