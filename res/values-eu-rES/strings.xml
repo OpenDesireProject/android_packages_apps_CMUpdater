@@ -41,6 +41,8 @@
   <string name="not_new_updates_found_title">Eguneraketa berriak</string>
   <string name="not_action_download">Deskarga</string>
   <string name="data_connection_required">Datu konexio bat beharrezkoa da.</string>
+  <string name="permission_not_granted_dialog_title">Baimena ukatuta</string>
+  <string name="permission_not_granted_dialog_message">Kanpo biltegiratzera idazteko baimena ukatu da. Ezin da eguneraketa deskargatu.</string>
   <string name="confirm_download_cancelation_dialog_title">Utzi deskarga</string>
   <string name="confirm_download_cancelation_dialog_message">Utzi uneko deskarga?</string>
   <string name="download_cancelled">Deskarga utzi da</string>
